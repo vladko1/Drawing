@@ -1,0 +1,79 @@
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace WindowsFormsApplication1
+{
+    public partial class StartForm : Form
+    {
+        private Graphics gr;
+        private Point pt;
+        private Point oldPt;
+        private bool isDrawing;
+        private Pen myPen;
+        private Color c;
+        private Font f;
+
+        public StartForm()
+        {
+            InitializeComponent();
+            gr = panel1.CreateGraphics();
+            gr.Clear(Color.White);
+            pt = new Point(panel1.ClientRectangle.Left + panel1.ClientRectangle.Width / 2, panel1.ClientRectangle.Top + panel1.ClientRectangle.Height / 2);
+            oldPt = pt;
+            isDrawing = false;
+            c = Color.Black;
+            f = new Font("Ariel", 18);
+        }
+
+        private void start_Click(object sender, EventArgs e)
+        {
+            isDrawing = true;
+            pt = oldPt = new Point(panel1.ClientRectangle.Left + panel1.ClientRectangle.Width / 2, panel1.ClientRectangle.Top + panel1.ClientRectangle.Height / 2);
+            gr.Clear(Color.White);
+            ColorDialog colorDialog1 = new ColorDialog();
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                c = colorDialog1.Color;
+            }
+            myPen = new Pen(c, 3);
+        }
+
+        private void panel1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                if (isDrawing == true)
+                {
+                    pt.X = e.X;
+                    pt.Y = e.Y;
+                    gr.DrawLine(myPen, oldPt, pt);
+                    oldPt = pt;
+                }
+            }
+            else
+            {
+                if (e.Button == MouseButtons.Right)
+                {
+                    myPen.Dispose();
+                    isDrawing = false;
+                }
+            }
+        }
+
+        private void show_Click(object sender, EventArgs e)
+        {
+            if (textBox1.Text == "")
+            {
+                MessageBox.Show("Enter text");
+            }
+            else
+            {
+                gr.Clear(Color.White);
+                gr.DrawString(textBox1.Text, f, Brushes.Black, new Point(panel1.ClientRectangle.Left, panel1.ClientRectangle.Top + panel1.ClientRectangle.Left / 2));
+                textBox1.Text = ""; 
+                f.Dispose();
+            }
+        }
+    }
+}
